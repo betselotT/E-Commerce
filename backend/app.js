@@ -10,7 +10,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://flashcards-frontend-2ap4.onrender.com",
+  "https://e-commerce-zeta-five-45.vercel.app/",
 ];
 
 app.use(cors());
@@ -32,7 +32,7 @@ const swaggerOptions = {
     },
     servers: [
       { url: "http://localhost:5000" },
-      { url: "https://flashcards-backend-gwe3.onrender.com" },
+      { url: "https://e-commerce-rwlo.onrender.com" },
     ],
     components: {
       securitySchemes: {

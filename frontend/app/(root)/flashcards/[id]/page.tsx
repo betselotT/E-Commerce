@@ -4,7 +4,8 @@ import type React from "react";
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import type { Flashcard, NewFlashcard } from "@/app/types/flashcard";
-import { LogOut } from "lucide-react";
+import { LogOut, ShoppingCart, CheckCircle } from "lucide-react";
+import Link from "next/link";
 
 const ProductManager = () => {
   const params = useParams();
@@ -22,6 +23,7 @@ const ProductManager = () => {
     null
   );
   const [error, setError] = useState<string>("");
+  const [addingToCart, setAddingToCart] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -171,6 +173,35 @@ const ProductManager = () => {
     }
   };
 
+  const handleAddToCart = async (flashcardId: string) => {
+    if (!token) {
+      setError("Please sign in to add items to your cart.");
+      return;
+    }
+    setAddingToCart(flashcardId);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/cart`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ flashcardId, quantity: 1 }),
+        }
+      );
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.message || "Failed to add to cart");
+      }
+    } catch (err) {
+      setError("Server error while adding to cart.");
+    } finally {
+      setTimeout(() => setAddingToCart(null), 1000); // Show success for 1 second
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     router.push("/");
@@ -213,13 +244,19 @@ const ProductManager = () => {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-green-50/50 rounded-full blur-3xl animate-ping delay-2000"></div>
       </div>
 
-      {/* Logout button */}
-      <button
-        onClick={handleLogout}
-        className="fixed top-4 right-8 z-50 text-black transition-all duration-300 transform hover:scale-105 hover:cursor-pointer font-medium"
-      >
-        <LogOut size={40} />
-      </button>
+      <div className="fixed top-4 right-8 z-50 flex items-center space-x-6">
+        <Link href={`/cart/${params.id}`} passHref>
+          <div className="text-black transition-all duration-300 transform hover:scale-105 hover:cursor-pointer">
+            <ShoppingCart size={40} />
+          </div>
+        </Link>
+        <button
+          onClick={handleLogout}
+          className="text-black transition-all duration-300 transform hover:scale-105 hover:cursor-pointer font-medium"
+        >
+          <LogOut size={40} />
+        </button>
+      </div>
 
       <div className="relative z-10 p-4 sm:p-6 lg:p-8">
         <div className="max-w-6xl mx-auto">
@@ -443,6 +480,23 @@ const ProductManager = () => {
                           {flashcard.category} • {flashcard.difficulty}
                         </p>
                       </div>
+                      <button
+                        onClick={() => handleAddToCart(flashcard._id)}
+                        disabled={addingToCart === flashcard._id}
+                        className={`w-full mt-auto bg-gradient-to-r text-white p-3 rounded-2xl transition-all duration-300 transform hover:scale-105 disabled:opacity-70 disabled:cursor-wait font-semibold text-md shadow-md ${
+                          addingToCart === flashcard._id
+                            ? "from-blue-500 to-blue-600"
+                            : "from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                        }`}
+                      >
+                        {addingToCart === flashcard._id ? (
+                          <span className="flex items-center justify-center">
+                            <CheckCircle className="mr-2" size={20} /> Added
+                          </span>
+                        ) : (
+                          "Add to Cart"
+                        )}
+                      </button>
                       <div className="absolute bottom-4 left-6 right-6">
                         <div className="flex justify-between items-center text-xs text-gray-500">
                           <span>

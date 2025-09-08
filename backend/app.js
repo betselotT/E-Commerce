@@ -1,10 +1,10 @@
-// backend/app.js
 const express = require("express");
 const cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
 const authRoutes = require("./routes/authRoutes");
 const flashcardRoutes = require("./routes/flashcardRoutes");
+const cartRoutes = require("./routes/cartRoutes");
 
 const app = express();
 
@@ -51,5 +51,6 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/auth", authRoutes);
 app.use("/api", flashcardRoutes);
+app.use("/api", cartRoutes);
 
 module.exports = app;

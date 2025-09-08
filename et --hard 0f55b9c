@@ -1,0 +1,10 @@
+[33m4b321e8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m final push
+[33m58a15da[m final push
+[33mc326ab9[m final push
+[33m0f55b9c[m fixed build error
+[33m5a9c14e[m fixed add to cart issue and UI modifications
+[33m19a510a[m debugging add to cart issue
+[33med2def2[m working on add to cart functionality
+[33mbe8a979[m fixed allowedOrigins
+[33m84502ea[m updated backend base url
+[33m1fe8d01[m added authentication

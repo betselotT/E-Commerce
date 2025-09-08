@@ -31,7 +31,10 @@ exports.addToCart = [
       }
 
       await cart.save();
-      res.status(200).json(cart);
+      const populatedCart = await Cart.findOne({ userId }).populate(
+        "items.flashcardId"
+      );
+      res.status(200).json(populatedCart);
     } catch (err) {
       console.error("AddToCart error:", err);
       res.status(500).json({ message: "Server error" });
@@ -84,7 +87,10 @@ exports.updateCartItem = [
       }
 
       await cart.save();
-      res.json(cart);
+      const populatedCart = await Cart.findOne({ userId }).populate(
+        "items.flashcardId"
+      );
+      res.json(populatedCart);
     } catch (err) {
       res.status(500).json({ message: "Server error" });
     }
@@ -114,7 +120,10 @@ exports.deleteCartItem = [
       }
 
       await cart.save();
-      res.json(cart);
+      const populatedCart = await Cart.findOne({ userId }).populate(
+        "items.flashcardId"
+      );
+      res.json(populatedCart);
     } catch (err) {
       res.status(500).json({ message: "Server error" });
     }

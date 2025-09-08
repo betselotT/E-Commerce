@@ -167,7 +167,7 @@ const ProductManager = () => {
         setError("Failed to delete product");
       }
     } catch (err) {
-      setError("Server error");
+      setError("Server error while adding to cart.");
     } finally {
       setIsLoading(false);
     }
@@ -263,7 +263,7 @@ const ProductManager = () => {
           {/* Header */}
           <div className="text-center mb-8 sm:mb-12">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-green-600 via-green-600 to-green-700 bg-clip-text text-transparent mb-4 animate-fade-in">
-              ShopSphere Manager
+              E-Commerce Manager
             </h1>
             <p className="text-gray-600 text-lg sm:text-xl font-light">
               Manage your product inventory with ease
@@ -410,15 +410,16 @@ const ProductManager = () => {
                     className="group animate-fade-in-up"
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
-                    <div className="h-64 bg-white/90 backdrop-blur-xl rounded-3xl p-6 border border-gray-200 shadow-2xl hover:shadow-green-200/50 transition-all duration-300 group-hover:scale-105 relative">
+                    <div className="h-80 bg-white/90 backdrop-blur-xl rounded-3xl p-6 border border-gray-200 shadow-2xl hover:shadow-green-200/50 transition-all duration-300 group-hover:scale-105 relative flex flex-col">
                       {/* Action buttons */}
-                      <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute top-4 right-4 flex space-x-2 transition-all duration-300">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setEditingFlashcard(flashcard);
                           }}
                           className="p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors duration-200 shadow-lg"
+                          title="Edit product"
                         >
                           <svg
                             className="w-4 h-4"
@@ -440,6 +441,7 @@ const ProductManager = () => {
                             setDeletingFlashcard(flashcard);
                           }}
                           className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-200 shadow-lg"
+                          title="Delete product"
                         >
                           <svg
                             className="w-4 h-4"
@@ -469,36 +471,43 @@ const ProductManager = () => {
                           {flashcard.difficulty}
                         </div>
                       </div>
-                      <div className="flex flex-col justify-center items-center h-full -mt-8">
-                        <h3 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 text-center">
+
+                      <div className="flex flex-col justify-center items-center flex-1 text-center">
+                        <h3 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
                           {flashcard.word}
                         </h3>
-                        <p className="text-gray-600 text-lg text-center mb-2">
-                          ${flashcard.answer}
+                        <p className="text-green-600 text-2xl font-bold mb-2">
+                          ${flashcard.answer.toFixed(2)}
                         </p>
-                        <p className="text-gray-500 text-sm text-center">
+                        <p className="text-gray-500 text-sm mb-4">
                           {flashcard.category} • {flashcard.difficulty}
                         </p>
                       </div>
-                      <button
-                        onClick={() => handleAddToCart(flashcard._id)}
-                        disabled={addingToCart === flashcard._id}
-                        className={`w-full mt-auto bg-gradient-to-r text-white p-3 rounded-2xl transition-all duration-300 transform hover:scale-105 disabled:opacity-70 disabled:cursor-wait font-semibold text-md shadow-md ${
-                          addingToCart === flashcard._id
-                            ? "from-blue-500 to-blue-600"
-                            : "from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-                        }`}
-                      >
-                        {addingToCart === flashcard._id ? (
-                          <span className="flex items-center justify-center">
-                            <CheckCircle className="mr-2" size={20} /> Added
-                          </span>
-                        ) : (
-                          "Add to Cart"
-                        )}
-                      </button>
-                      <div className="absolute bottom-4 left-6 right-6">
-                        <div className="flex justify-between items-center text-xs text-gray-500">
+
+                      <div className="mt-auto">
+                        <button
+                          onClick={() => handleAddToCart(flashcard._id)}
+                          disabled={addingToCart === flashcard._id}
+                          className={`w-full text-white p-4 rounded-2xl transition-all duration-300 transform hover:scale-105 disabled:opacity-70 disabled:cursor-wait font-semibold text-lg shadow-lg ${
+                            addingToCart === flashcard._id
+                              ? "bg-gradient-to-r from-blue-500 to-blue-600"
+                              : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                          }`}
+                        >
+                          {addingToCart === flashcard._id ? (
+                            <span className="flex items-center justify-center">
+                              <CheckCircle className="mr-2" size={20} /> Added
+                              to Cart
+                            </span>
+                          ) : (
+                            <span className="flex items-center justify-center">
+                              <ShoppingCart className="mr-2" size={20} /> Add to
+                              Cart
+                            </span>
+                          )}
+                        </button>
+
+                        <div className="flex justify-between items-center text-xs text-gray-500 mt-3 pt-3 border-t border-gray-200">
                           <span>
                             Added:{" "}
                             {new Date(flashcard.addedDay).toLocaleDateString()}

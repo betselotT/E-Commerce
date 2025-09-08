@@ -1,10 +1,8 @@
 "use client";
-
-import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import type { Cart, CartItem } from "@/app/types/cart";
+import type { Cart } from "@/app/types/cart";
 import { ArrowLeft, Trash2 } from "lucide-react";
 
 const CartPage = () => {
@@ -110,10 +108,12 @@ const CartPage = () => {
 
   const totalPrice = useMemo(() => {
     return (
-      cart?.items.reduce(
-        (total, item) => total + item.flashcardId.answer * item.quantity,
-        0
-      ) || 0
+      cart?.items.reduce((total, item) => {
+        if (item.flashcardId && typeof item.flashcardId.answer === "number") {
+          return total + item.flashcardId.answer * item.quantity;
+        }
+        return total;
+      }, 0) || 0
     );
   }, [cart]);
 
@@ -165,46 +165,69 @@ const CartPage = () => {
                 {cart.items.map((item) => (
                   <div
                     key={item._id}
-                    className="flex flex-col sm:flex-row items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-200"
+                    className="flex flex-col sm:flex-row items-center justify-between p-6 bg-gray-50 rounded-2xl border border-gray-200 hover:shadow-md transition-shadow duration-200"
                   >
-                    <div className="flex items-center mb-4 sm:mb-0">
+                    <div className="flex items-center mb-4 sm:mb-0 flex-1">
                       <div className="text-4xl mr-4">
                         {{
                           Electronics: "📱",
                           Clothing: "👕",
                           Home: "🏠",
                           Books: "📚",
-                        }[item.flashcardId.category] || "📦"}
+                        }[item.flashcardId?.category] || "📦"}
                       </div>
-                      <div>
+                      <div className="flex-1">
                         <h4 className="font-bold text-lg text-gray-800">
-                          {item.flashcardId.word}
+                          {item.flashcardId?.word || "Unknown Product"}
                         </h4>
-                        <p className="text-gray-600">
-                          ${item.flashcardId.answer.toFixed(2)}
+                        <p className="text-gray-600 text-base">
+                          $
+                          {item.flashcardId?.answer
+                            ? item.flashcardId.answer.toFixed(2)
+                            : "0.00"}{" "}
+                          each
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {item.flashcardId?.category || "Unknown Category"}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
-                      <input
-                        type="number"
-                        min="1"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          handleUpdateQuantity(
-                            item._id,
-                            parseInt(e.target.value)
-                          )
-                        }
-                        disabled={updatingItemId === item._id}
-                        className="w-20 p-2 text-center bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                      />
+                      <div className="flex items-center space-x-2">
+                        <label className="text-sm text-gray-600 font-medium">
+                          Qty:
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={item.quantity}
+                          onChange={(e) =>
+                            handleUpdateQuantity(
+                              item._id,
+                              Number.parseInt(e.target.value)
+                            )
+                          }
+                          disabled={updatingItemId === item._id}
+                          className="w-20 p-2 text-center bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 disabled:opacity-50"
+                        />
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-lg text-gray-800">
+                          $
+                          {item.flashcardId?.answer
+                            ? (item.flashcardId.answer * item.quantity).toFixed(
+                                2
+                              )
+                            : "0.00"}
+                        </p>
+                      </div>
                       <button
                         onClick={() => handleDeleteItem(item._id)}
                         disabled={updatingItemId === item._id}
-                        className="p-2 text-red-500 hover:text-red-700 hover:bg-red-100 rounded-full transition-colors duration-200"
+                        className="p-3 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-all duration-200 disabled:opacity-50"
+                        title="Remove item"
                       >
-                        <Trash2 />
+                        <Trash2 size={20} />
                       </button>
                     </div>
                   </div>
